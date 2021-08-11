@@ -1,4 +1,4 @@
-# sdk
+# Zoo Labs SDK
 ![App CI](https://github.com/zoo-labs/sdk/actions/workflows/app.yml/badge.svg)
 ![Contracts CI](https://github.com/zoo-labs/sdk/actions/workflows/contracts.yml/badge.svg)
 
