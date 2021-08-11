@@ -1,23 +1,23 @@
-# ZOO
-![App CI](https://github.com/zoo-labs/zoo/actions/workflows/app.yml/badge.svg)
-![Contracts CI](https://github.com/zoo-labs/zoo/actions/workflows/contracts.yml/badge.svg)
+# nft
+![App CI](https://github.com/nft-labs/nft/actions/workflows/app.yml/badge.svg)
+![Contracts CI](https://github.com/nft-labs/nft/actions/workflows/contracts.yml/badge.svg)
 
-> An autonomous ecosystem where ZOO owners breed, collect, and trade exotic hybrid animals via NFTs.
+> An autonomous ecosystem where nft owners breed, collect, and trade exotic hybrid animals via NFTs.
 
 # 🏄‍♂️ Quick Start
 
 Prerequisites: [Node](https://nodejs.org/dist/latest-v12.x/) plus [Yarn](https://classic.yarnpkg.com/en/docs/install/) and [Git](https://git-scm.com/downloads)
 
-> clone/fork 🏗 ZOO:
+> clone/fork 🏗 nft:
 
 ```bash
-git clone https://github.com/zoo-labs/zoo.git
+git clone https://github.com/nft-labs/nft.git
 ```
 
 > install and start your 👷‍ Hardhat chain:
 
 ```bash
-cd zoo
+cd nft
 yarn install
 yarn chain
 ```
@@ -25,7 +25,7 @@ yarn chain
 > in a second terminal window, start your 📱 frontend:
 
 ```bash
-cd zoo
+cd nft
 yarn start
 ```
 
@@ -33,20 +33,20 @@ You should now have a local blockchain, with contracts deployed, and your app ru
 
 
 ## Moralis integration
-Zoo builds on top of Moralis, which provides both cloud functions and a realtime
+NFT builds on top of Moralis, which provides both cloud functions and a realtime
 API for the React frontend.
 
 ### Plugins
 Moralis servers support plugins which can listen to and respond to events on a given
-contract. For Zoo, we Moralis watches the `ZooKeeper` contract for any new game
-events and updates various game tables accordingly.
+contract. For NFT, we Moralis watches the `Keeper` contract for any new NFT
+events and updates various NFT tables accordingly.
 
 ```shell
 yarn moralis:plugins
 ```
 
 ### Cloud Functions
-Moralis Cloud Functions are used to update cached game state when key events are
+Moralis Cloud Functions are used to update cached NFT state when key events are
 fired.
 
 ```shell
