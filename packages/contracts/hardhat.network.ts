@@ -8,9 +8,7 @@ function mnemonic() {
   try {
     return fs.readFileSync(`./mnemonic.txt`).toString().trim()
   } catch (e) {
-    console.log(
-      '☢️  warning: No mnemonic file created for a deploy account. Try `yarn run generate` and then `yarn run account`.'
-    )
+    console.log('☢️  warning: No mnemonic file created for a deploy account. Try `yarn run generate` and then `yarn run account`.')
   }
   return ''
 }
@@ -20,17 +18,17 @@ function mnemonic() {
 //
 const networks: HardhatUserConfig['networks'] = {
   hardhat: {
-    chainId: 31337,
+    chainId: 1337,
     allowUnlimitedContractSize: true,
     mining: {
       auto: true,
-      interval: 3000
+      interval: 5000,
     },
     accounts: {
       mnemonic: mnemonic(),
       accountsBalance: '10000000000000000000000',
-      count: 20
-    }
+      count: 20,
+    },
   },
   coverage: {
     url: 'http://127.0.0.1:8555',
