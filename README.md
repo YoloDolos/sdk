@@ -1,8 +1,8 @@
-# nft
-![App CI](https://github.com/nft-labs/nft/actions/workflows/app.yml/badge.svg)
-![Contracts CI](https://github.com/nft-labs/nft/actions/workflows/contracts.yml/badge.svg)
+# sdk
+![App CI](https://github.com/zoo-labs/sdk/actions/workflows/app.yml/badge.svg)
+![Contracts CI](https://github.com/zoo-labs/sdk/actions/workflows/contracts.yml/badge.svg)
 
-> An autonomous ecosystem where nft owners breed, collect, and trade exotic hybrid animals via NFTs.
+> Build scalable, secure NFT applications on top of Moralis
 
 # 🏄‍♂️ Quick Start
 
@@ -11,13 +11,13 @@ Prerequisites: [Node](https://nodejs.org/dist/latest-v12.x/) plus [Yarn](https:/
 > clone/fork 🏗 nft:
 
 ```bash
-git clone https://github.com/nft-labs/nft.git
+git clone https://github.com/zoo-labs/sdk.git sdk
 ```
 
-> install and start your 👷‍ Hardhat chain:
+> install and start your local 👷‍ chain:
 
 ```bash
-cd nft
+cd sdk
 yarn install
 yarn chain
 ```
@@ -25,7 +25,7 @@ yarn chain
 > in a second terminal window, start your 📱 frontend:
 
 ```bash
-cd nft
+cd sdk
 yarn start
 ```
 
@@ -33,8 +33,9 @@ You should now have a local blockchain, with contracts deployed, and your app ru
 
 
 ## Moralis integration
-NFT builds on top of Moralis, which provides both cloud functions and a realtime
-API for the React frontend.
+We use Moralis to power some of the real-time features of our app. Their
+platform provides a scalable caching layer and realtime API which forms an
+(optional) backend for our Web3 frontend.
 
 ### Plugins
 Moralis servers support plugins which can listen to and respond to events on a given
