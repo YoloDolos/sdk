@@ -2,7 +2,7 @@
 ![App CI](https://github.com/zoo-labs/sdk/actions/workflows/app.yml/badge.svg)
 ![Contracts CI](https://github.com/zoo-labs/sdk/actions/workflows/contracts.yml/badge.svg)
 
-> Build scalable, secure NFT applications on top of Moralis
+> Build scalable and secure NFT powered apps and games
 
 # 🏄‍♂️ Quick Start
 
@@ -29,18 +29,18 @@ cd sdk
 yarn start
 ```
 
-You should now have a local blockchain, with contracts deployed, and your app running on https://localhost:3000.
+You should now have a local blockchain, with contracts deployed, and your app
+running on https://localhost:3000.
 
 
 ## Moralis integration
-We use Moralis to power some of the real-time features of our app. Their
-platform provides a scalable caching layer and realtime API which forms an
-(optional) backend for our Web3 frontend.
+[Moralis](http://moralis.io) provides a scalable caching layer and cloud
+function powered backend for our serverless Web3 app.
 
 ### Plugins
-Moralis servers support plugins which can listen to and respond to events on a given
-contract. For NFT, we Moralis watches the `Keeper` contract for any new NFT
-events and updates various NFT tables accordingly.
+Moralis servers support plugins which can listen to and respond to events on a
+given contract. Moralis watches the `Keeper` contract for any new NFT events and
+updates various NFT tables accordingly.
 
 ```shell
 yarn moralis:plugins
@@ -54,7 +54,7 @@ fired.
 yarn moralis:functions
 ```
 
-## Running Local Devchain Proxy
+### Running Local Devchain Proxy
 To connect your local blockchain to Moralis:
 
 ```shell
