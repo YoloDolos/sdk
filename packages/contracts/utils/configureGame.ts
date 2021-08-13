@@ -5,7 +5,7 @@ import hybrids from './hybrids.json'
 
 // Configure game for our Gen 0 drop
 export default async function configureGame(keeper: any, drop: any) {
-  // Add Drop to ZooKeeper
+  // Add Drop to ZooApp
   await keeper.setDrop(drop.address)
 
   const basePrice = 1500000
@@ -14,19 +14,19 @@ export default async function configureGame(keeper: any, drop: any) {
   await keeper.setNamePrice(basePrice) // about $20 / name
 
   // Configure Drop
-  await drop.configureKeeper(keeper.address)
+  await drop.configureApp(keeper.address)
 
-  // Add eggs
-  const eggs = [
+  // Add tokens
+  const tokens = [
     {
-      name: 'Base Egg',
-      price: basePrice * 10, // about $200 / egg
+      name: 'Base Token',
+      price: basePrice * 10, // about $200 / token
       supply: 16000,
-      tokenURI: 'https://db.zoolabs/egg.jpg',
-      metadataURI: 'https://db.zoolabs.org/egg.json',
+      tokenURI: 'https://db.zoolabs/token.jpg',
+      metadataURI: 'https://db.zoolabs.org/token.json',
     },
     {
-      name: 'Hybrid Egg',
+      name: 'Hybrid Token',
       price: 0,
       supply: 0,
       tokenURI: 'https://db.zoolabs/hybrid.jpg',
@@ -34,12 +34,12 @@ export default async function configureGame(keeper: any, drop: any) {
     },
   ]
 
-  eggs.map(async (v) => {
-    console.log('Add Egg:', v.name)
-    await drop.setEgg(v.name, v.price, v.supply, v.tokenURI, v.metadataURI)
+  tokens.map(async (v) => {
+    console.log('Add Token:', v.name)
+    await drop.setToken(v.name, v.price, v.supply, v.tokenURI, v.metadataURI)
   })
 
-  await drop.configureEggs('Base Egg', 'Hybrid Egg')
+  await drop.configureTokens('Base Token', 'Hybrid Token')
 
   // Add rarities
   rarities.sort(function (a, b) {

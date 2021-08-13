@@ -32,6 +32,30 @@ yarn start
 You should now have a local blockchain, with contracts deployed, and your app
 running on https://localhost:3000.
 
+# Features
+- React / Redux Storybook components
+- Easily adapt for any app, game or marketplace
+- Market / Media contracts fully compatible with Zora Protocol
+- Moralis integration for on-chain caching / scalability
+- Mobile friendly tokens
+- On-chain randomization built-in (Commit / Reveal and Chainlink)
+- Support for Bonding curves
+- Integrated support for on-chain randomizaion
+- Customizable NFT
+- Zap Protocol VRF (Soon)
+
+Full set of mobile friendly React / Redux NFT marketplace components
+- OpenZepplin based ERC20 and ERC721 implementation
+- Integrated React and Redux app, with Storybook of all components
+Builds on top of [Zora] protocol Market and Media contracts.
+
+
+## Mnemonic
+You can generate a new mnemonic which will be used for deployment and testing by
+adding a mnemonic.txt file to packages/contracts. You can also use `yarn
+generate` and `yarn account` to create a new mnemonic securely.
+
+
 
 ## Moralis integration
 [Moralis](http://moralis.io) provides a scalable caching layer and cloud

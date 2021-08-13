@@ -2,8 +2,8 @@
 import { ethers } from 'hardhat'
 import chai, { expect } from 'chai'
 import asPromised from 'chai-as-promised'
-import { deployOtherNFTs, deployZooToken, deployZooProtocol, mint, ONE_ZOO, TENTH_ZOO, THOUSANDTH_ZOO, TWO_ZOO } from './utils'
-import { ZooAuction, ZooMarket, ZooMedia, ZooToken, TestERC721 } from '../types'
+import { deployOtherNFTs, deployToken, deployProtocol, mint, ONE_ZOO, TENTH_ZOO, THOUSANDTH_ZOO, TWO_ZOO } from './utils'
+import { Auction, Market, Media, Token, TestERC721 } from '../types'
 import { BigNumber, Signer } from 'ethers'
 
 chai.use(asPromised)
@@ -14,19 +14,19 @@ const ONE_DAY = 24 * 60 * 60
 const smallify = (bn: BigNumber) => bn.div(THOUSANDTH_ZOO).toNumber()
 
 describe.skip('integration', () => {
-  let market: ZooMarket
-  let media: ZooMedia
-  let token: ZooToken
-  let auction: ZooAuction
+  let market: Market
+  let media: Media
+  let token: Token
+  let auction: Auction
   let otherNft: TestERC721
   let deployer, creator, owner, curator, bidderA, bidderB, otherUser: Signer
   let deployerAddress, ownerAddress, creatorAddress, curatorAddress, bidderAAddress, bidderBAddress, otherUserAddress: string
 
-  async function deploy(): Promise<ZooAuction> {
-    const ZooAuction = await ethers.getContractFactory('ZooAuction')
-    const auctionHouse = await ZooAuction.deploy()
+  async function deploy(): Promise<Auction> {
+    const Auction = await ethers.getContractFactory('Auction')
+    const auctionHouse = await Auction.deploy()
     await auctionHouse.configure(media.address, token.address)
-    return auctionHouse as ZooAuction
+    return auctionHouse as Auction
   }
 
   beforeEach(async () => {
@@ -35,8 +35,8 @@ describe.skip('integration', () => {
     ;[deployerAddress, creatorAddress, ownerAddress, curatorAddress, bidderAAddress, bidderBAddress, otherUserAddress] = await Promise.all(
       [deployer, creator, owner, curator, bidderA, bidderB].map((s) => s.getAddress()),
     )
-    token = await deployZooToken()
-    const contracts = await deployZooProtocol(token.address)
+    token = await deployToken()
+    const contracts = await deployProtocol(token.address)
     const nfts = await deployOtherNFTs()
     market = contracts.market
     media = contracts.media
@@ -91,12 +91,12 @@ describe.skip('integration', () => {
       expect(smallify(afterBalance)).to.be.approximately(smallify(beforeBalance.add(TENTH_ZOO.mul(17))), smallify(TENTH_ZOO))
     })
 
-    it('should pay the token creator in ZooToken', async () => {
+    it('should pay the token creator in Token', async () => {
       const beforeBalance = await token.balanceOf(creatorAddress)
       await run()
       const afterBalance = await token.balanceOf(creatorAddress)
 
-      // 15% creator fee -> 2 ZOO * 15% = 0.3 ZooToken
+      // 15% creator fee -> 2 ZOO * 15% = 0.3 Token
       expect(afterBalance).to.eq(beforeBalance.add(THOUSANDTH_ZOO.mul(300)))
     })
   })
@@ -145,12 +145,12 @@ describe.skip('integration', () => {
       )
     })
 
-    it('should pay the token creator in ZooToken', async () => {
+    it('should pay the token creator in Token', async () => {
       const beforeBalance = await token.balanceOf(creatorAddress)
       await run()
       const afterBalance = await token.balanceOf(creatorAddress)
 
-      // 15% creator fee  -> 2 ZOO * 15% = 0.3 ZooToken
+      // 15% creator fee  -> 2 ZOO * 15% = 0.3 Token
       expect(afterBalance).to.eq(beforeBalance.add(THOUSANDTH_ZOO.mul(300)))
     })
 
@@ -159,12 +159,12 @@ describe.skip('integration', () => {
       await run()
       const afterBalance = await ethers.provider.getBalance(curatorAddress)
 
-      // 20% of 1.7 ZooToken -> 0.34
+      // 20% of 1.7 Token -> 0.34
       expect(smallify(afterBalance)).to.be.approximately(smallify(beforeBalance.add(THOUSANDTH_ZOO.mul(340))), smallify(TENTH_ZOO))
     })
   })
 
-  describe('ZooToken Auction with no curator', () => {
+  describe('Token Auction with no curator', () => {
     async function run() {
       await media.connect(owner).approve(auction.address, 0)
       await auction.connect(owner).createAuction(0, media.address, ONE_DAY, TENTH_ZOO, ethers.constants.AddressZero, 20, token.address)
@@ -201,7 +201,7 @@ describe.skip('integration', () => {
       await run()
       const afterBalance = await token.balanceOf(ownerAddress)
 
-      // 15% creator fee -> 2 ZOO * 85% = 1.7ZooToken
+      // 15% creator fee -> 2 ZOO * 85% = 1.7Token
       expect(afterBalance).to.eq(TENTH_ZOO.mul(17))
     })
 
@@ -210,12 +210,12 @@ describe.skip('integration', () => {
       await run()
       const afterBalance = await token.balanceOf(creatorAddress)
 
-      // 15% creator fee -> 2 ZOO * 15% = 0.3 ZooToken
+      // 15% creator fee -> 2 ZOO * 15% = 0.3 Token
       expect(afterBalance).to.eq(beforeBalance.add(THOUSANDTH_ZOO.mul(300)))
     })
   })
 
-  describe('ZooToken auction with curator', async () => {
+  describe('Token auction with curator', async () => {
     async function run() {
       await media.connect(owner).approve(auction.address, 0)
       await auction.connect(owner).createAuction(0, media.address, ONE_DAY, TENTH_ZOO, curator.address, 20, token.address)
@@ -253,7 +253,7 @@ describe.skip('integration', () => {
       await run()
       const afterBalance = await token.balanceOf(ownerAddress)
 
-      // 15% creator fee + 20% curator fee -> 2 ZOO * 85% * 80% = 1.36ZooToken
+      // 15% creator fee + 20% curator fee -> 2 ZOO * 85% * 80% = 1.36Token
       expect(afterBalance).to.eq(THOUSANDTH_ZOO.mul(1360))
     })
 
@@ -262,7 +262,7 @@ describe.skip('integration', () => {
       await run()
       const afterBalance = await token.balanceOf(creatorAddress)
 
-      // 15% creator fee -> 2 ZOO * 15% = 0.3 ZooToken
+      // 15% creator fee -> 2 ZOO * 15% = 0.3 Token
       expect(afterBalance).to.eq(beforeBalance.add(THOUSANDTH_ZOO.mul(300)))
     })
 
@@ -271,7 +271,7 @@ describe.skip('integration', () => {
       await run()
       const afterBalance = await token.balanceOf(curatorAddress)
 
-      // 15% creator fee + 20% curator fee = 2 ZOO * 85% * 20% = 0.34 ZooToken
+      // 15% creator fee + 20% curator fee = 2 ZOO * 85% * 20% = 0.34 Token
       expect(afterBalance).to.eq(beforeBalance.add(THOUSANDTH_ZOO.mul(340)))
     })
   })
@@ -324,7 +324,7 @@ describe.skip('integration', () => {
       await run()
       const afterBalance = await ethers.provider.getBalance(curatorAddress)
 
-      // 20% of 2 ZooToken -> 0.4
+      // 20% of 2 Token -> 0.4
       expect(smallify(afterBalance)).to.be.approximately(smallify(beforeBalance.add(TENTH_ZOO.mul(4))), smallify(THOUSANDTH_ZOO))
     })
   })

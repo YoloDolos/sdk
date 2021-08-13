@@ -1,4 +1,4 @@
-// deploy/04_deploy_zoo_drop.ts
+// deploy/04_deploydrop.ts
 
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
@@ -10,7 +10,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = deployments
   const { deployer } = await getNamedAccounts()
 
-  const deployResult = await deploy('ZooDrop', {
+  const deployResult = await deploy('Drop', {
     from: deployer,
     args: ['Gen 0'],
     log: true,
@@ -18,9 +18,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   if (!deployResult.newlyDeployed) return false
 
-  const drop = await ethers.getContractAt('ZooDrop', deployResult.address)
-  const keeperAddress = (await deployments.get('ZooKeeper')).address
-  const keeper = await ethers.getContractAt('ZooKeeper', keeperAddress)
+  const drop = await ethers.getContractAt('Drop', deployResult.address)
+  const keeperAddress = (await deployments.get('App')).address
+  const keeper = await ethers.getContractAt('App', keeperAddress)
 
   // Configure game executes a very long series of transactions which set the
   // initial state for our Gen 0 drop. Do not expect this to work during
@@ -32,6 +32,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 }
 
 export default func
-func.id = 'deploy_zoo_drop'
-func.tags = ['ZooDrop']
-// func.dependencies = ['ZooKeeper']
+func.id = 'deploydrop'
+func.tags = ['Drop']
+// func.dependencies = ['App']

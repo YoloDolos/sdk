@@ -22,9 +22,9 @@ interface IMediaExtended is IMedia {
 }
 
 /**
- * @title Zoo's auction house, enabling players to buy, sell and trade NFTs
+ * @title 's auction house, enabling players to buy, sell and trade NFTs
  */
-contract ZooAuction is IAuctionHouse, ReentrancyGuard, Ownable {
+contract Auction is IAuctionHouse, ReentrancyGuard, Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
     using Counters for Counters.Counter;
@@ -38,7 +38,7 @@ contract ZooAuction is IAuctionHouse, ReentrancyGuard, Ownable {
     // The address of the Media protocol to use via this contract
     address public mediaAddress;
 
-    // The address of the ZooToken contract
+    // The address of the Token contract
     address public tokenAddress;
 
     // A mapping of all of the auctions currently running.
@@ -57,7 +57,7 @@ contract ZooAuction is IAuctionHouse, ReentrancyGuard, Ownable {
     }
 
     /*
-     * Configure ZooAuction to work with the proper media and token contract
+     * Configure Auction to work with the proper media and token contract
      */
     function configure(address _mediaAddress, address _tokenAddress) public onlyOwner {
         require(
@@ -228,7 +228,7 @@ contract ZooAuction is IAuctionHouse, ReentrancyGuard, Ownable {
             "Must send more than last bid by minBidIncrementPercentage amount"
         );
 
-        // For Zoo Protocol, ensure that the bid is valid for the current bidShare configuration
+        // For  Protocol, ensure that the bid is valid for the current bidShare configuration
         if (auctions[auctionID].tokenContract == tokenAddress) {
             require(
                 IMarket(IMediaExtended(tokenAddress).marketContract())
@@ -301,7 +301,7 @@ contract ZooAuction is IAuctionHouse, ReentrancyGuard, Ownable {
     }
 
     /**
-     * @notice End an auction, finalizing the bid on Zoo if applicable and paying out the respective parties.
+     * @notice End an auction, finalizing the bid on  if applicable and paying out the respective parties.
      * @dev If for some reason the auction cannot be finalized (invalid token recipient, for example),
      * The auction is reset and the NFT is transferred back to the auction creator.
      */
@@ -334,7 +334,7 @@ contract ZooAuction is IAuctionHouse, ReentrancyGuard, Ownable {
             (
                 bool success,
                 uint256 remainingProfit
-            ) = _handleZooAuctionSettlement(auctionID);
+            ) = _handleAuctionSettlement(auctionID);
             tokenOwnerProfit = remainingProfit;
             if (success != true) {
                 _handleOutgoingBid(
@@ -486,7 +486,7 @@ contract ZooAuction is IAuctionHouse, ReentrancyGuard, Ownable {
         return auctions[auctionID].tokenOwner != address(0);
     }
 
-    function _handleZooAuctionSettlement(uint256 auctionID)
+    function _handleAuctionSettlement(uint256 auctionID)
         internal
         returns (bool, uint256)
     {

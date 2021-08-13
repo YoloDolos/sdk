@@ -2,7 +2,6 @@ import { HardhatUserConfig } from 'hardhat/config'
 
 import fs from 'fs'
 
-const alchemyKey = 'EuD-FVgI2gMBGf0aypDghsPHYWHB9nhn'
 
 function mnemonic() {
   try {
@@ -38,7 +37,6 @@ const networks: HardhatUserConfig['networks'] = {
   mainnet: {
     url: 'https://bsc-dataseed.binance.org/',
     chainId: 56,
-    // gasPrice: 1000000000,
     accounts: {
       mnemonic: mnemonic(),
     },
@@ -46,26 +44,10 @@ const networks: HardhatUserConfig['networks'] = {
   testnet: {
     url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
     chainId: 97,
-    gasPrice: 20e9,
-    gas: 20e6,
     accounts: {
       mnemonic: mnemonic(),
     },
   },
 }
-
-// if (process.env.FORK_ENABLED == "true") {
-//   networks.hardhat = {
-//     chainId: 1,
-//     forking: {
-//       url: `https://eth-mainnet.alchemyapi.io/v2/${alchemyKey}`,
-//       // blockNumber: 12226812
-//     },
-//     accounts: {
-//       mnemonic,
-//     },
-//   }
-// }  else {
-// }
 
 export default networks

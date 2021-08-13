@@ -1,6 +1,6 @@
 // @ts-ignore
 import { ethers } from 'hardhat'
-import { ZooAuction, ZooMarket, ZooMedia, ZooMarket__factory, ZooMedia__factory, ZooToken__factory, ZooKeeper__factory, BadBidder, BadERC721, TestERC721, ZooToken } from '../types'
+import { Auction, Market, Media, Market__factory, Media__factory, Token__factory, App__factory, BadBidder, BadERC721, TestERC721, Token } from '../types'
 import { sha256 } from 'ethers/lib/utils'
 import Decimal from '../utils/Decimal'
 import { BigNumber, BigNumberish } from 'ethers'
@@ -18,19 +18,19 @@ let provider = new JsonRpcProvider()
 let [deployerWallet] = generatedWallets(provider)
 
 export async function deployCurrency() {
-  const currency = await new ZooToken__factory(deployerWallet).deploy()
+  const currency = await new Token__factory(deployerWallet).deploy()
   return currency.address
 }
 
 export async function mintCurrency(currency: string, to: string, value: number) {
-  await ZooToken__factory.connect(currency, deployerWallet).mint(to, value)
+  await Token__factory.connect(currency, deployerWallet).mint(to, value)
 }
 
 export async function approveCurrency(currency: string, spender: string, owner: Wallet) {
-  await ZooToken__factory.connect(currency, owner).approve(spender, MaxUint256)
+  await Token__factory.connect(currency, owner).approve(spender, MaxUint256)
 }
 export async function getBalance(currency: string, owner: string) {
-  return ZooToken__factory.connect(currency, deployerWallet).balanceOf(owner)
+  return Token__factory.connect(currency, deployerWallet).balanceOf(owner)
 }
 
 export function toNumWei(val: BigNumber) {
@@ -47,7 +47,7 @@ export type EIP712Sig = {
 export async function signPermit(owner: Wallet, toAddress: string, tokenAddress: string, tokenId: number, chainId: number) {
   return new Promise<EIP712Sig>(async (res, reject) => {
     let nonce
-    const mediaContract = ZooMedia__factory.connect(tokenAddress, owner)
+    const mediaContract = Media__factory.connect(tokenAddress, owner)
 
     try {
       nonce = (await mediaContract.permitNonces(owner.address, tokenId)).toNumber()
@@ -117,7 +117,7 @@ export async function signMintWithSig(
 ) {
   return new Promise<EIP712Sig>(async (res, reject) => {
     let nonce
-    const mediaContract = ZooMedia__factory.connect(tokenAddress, owner)
+    const mediaContract = Media__factory.connect(tokenAddress, owner)
 
     try {
       nonce = (await mediaContract.mintWithSigNonces(creator)).toNumber()
@@ -183,8 +183,8 @@ export const TENTH_ZOO = ethers.utils.parseUnits('0.1', 'ether') as BigNumber
 export const ONE_ZOO = ethers.utils.parseUnits('1', 'ether') as BigNumber
 export const TWO_ZOO = ethers.utils.parseUnits('2', 'ether') as BigNumber
 
-export const deployZooToken = async () => {
-  return (await (await ethers.getContractFactory('ZooToken')).deploy()) as ZooToken
+export const deployToken = async () => {
+  return (await (await ethers.getContractFactory('Token')).deploy()) as Token
 }
 
 export const deployOtherNFTs = async () => {
@@ -194,13 +194,13 @@ export const deployOtherNFTs = async () => {
   return { bad, test }
 }
 
-export const deployZooProtocol = async (tokenAddress) => {
+export const deployProtocol = async (tokenAddress) => {
   const [deployer] = await ethers.getSigners()
-  const token = await (await new ZooToken__factory(deployer).deploy()).deployed()
-  // const drop = await (await new ZooDrop__factory(deployer).deploy()).deployed();
-  const market = await (await new ZooMarket__factory(deployer).deploy()).deployed()
-  const media = await (await new ZooMedia__factory(deployer).deploy('ANML', 'ZooAnimals')).deployed()
-  const zookeeper = await (await new ZooKeeper__factory(deployer).deploy()).deployed()
+  const token = await (await new Token__factory(deployer).deploy()).deployed()
+  // const drop = await (await new Drop__factory(deployer).deploy()).deployed();
+  const market = await (await new Market__factory(deployer).deploy()).deployed()
+  const media = await (await new Media__factory(deployer).deploy('ANML', 'Animals')).deployed()
+  const zookeeper = await (await new App__factory(deployer).deploy()).deployed()
   await market.configure(zookeeper.address, media.address)
   await media.configure(zookeeper.address, market.address)
   // await drop.configure(zookepeer, media);
@@ -211,7 +211,7 @@ export const deployBidder = async (auction: string, nftContract: string) => {
   return (await (await (await ethers.getContractFactory('BadBidder')).deploy(auction, nftContract)).deployed()) as BadBidder
 }
 
-export const mint = async (media: ZooMedia) => {
+export const mint = async (media: Media) => {
   const metadataHex = ethers.utils.formatBytes32String('{}')
   const metadataHash = await sha256(metadataHex)
   const hash = ethers.utils.arrayify(metadataHash)
@@ -230,7 +230,7 @@ export const mint = async (media: ZooMedia) => {
   )
 }
 
-export const approveAuction = async (media: ZooMedia, auctionHouse: ZooAuction) => {
+export const approveAuction = async (media: Media, auctionHouse: Auction) => {
   await media.approve(auctionHouse.address, 0)
 }
 

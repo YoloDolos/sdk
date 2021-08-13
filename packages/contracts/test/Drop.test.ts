@@ -1,5 +1,5 @@
 import { ethers } from 'hardhat'
-import { ZooDrop } from '../types/ZooDrop'
+import { Drop } from '../types/Drop'
 import chai, { expect } from 'chai'
 import { BigNumber, Bytes, BytesLike, utils } from 'ethers'
 
@@ -11,26 +11,26 @@ let owner
 const TOKEN_URI = 'idx.zoolabs.io/token/'
 const META_URI = 'idx.zoolabs.io/meta/'
 
-describe('ZooDrop', () => {
+describe('Drop', () => {
   beforeEach(async () => {
     signers = await ethers.getSigners()
     owner = signers[0]
 
     // Deploy zoodrop
-    const ZooDrop = await ethers.getContractFactory('ZooDrop', owner)
-    drop = await ZooDrop.deploy('Gen1')
+    const Drop = await ethers.getContractFactory('Drop', owner)
+    drop = await Drop.deploy('Gen1')
 
-    // Set default eggs on ZooDrop
-    const eggs = [
+    // Set default tokens on Drop
+    const tokens = [
       {
-        name: 'baseEgg',
+        name: 'baseToken',
         price: 210,
         supply: 16000,
-        tokenURI: 'https://db.zoolabs/egg.jpg',
-        metadataURI: 'https://db.zoolabs.org/egg.json',
+        tokenURI: 'https://db.zoolabs/token.jpg',
+        metadataURI: 'https://db.zoolabs.org/token.json',
       },
       {
-        name: 'hybridEgg',
+        name: 'hybridToken',
         price: 0,
         supply: 0,
         tokenURI: 'https://db.zoolabs/hybrid.jpg',
@@ -39,22 +39,22 @@ describe('ZooDrop', () => {
     ]
 
     await Promise.all(
-      eggs.map((v) => {
-        drop.setEgg(v.name, v.price, v.supply, v.tokenURI, v.metadataURI)
+      tokens.map((v) => {
+        drop.setToken(v.name, v.price, v.supply, v.tokenURI, v.metadataURI)
       }),
     )
 
-    // configure our eggs to be base / hybrid egg
-    drop.configureEggs('baseEgg', 'hybridEgg')
+    // configure our tokens to be base / hybrid token
+    drop.configureTokens('baseToken', 'hybridToken')
 
     await Promise.all(
-      eggs.map((v) => {
-        console.log('Add Egg:', v.name)
-        drop.setEgg(v.name, v.price, v.supply, v.tokenURI, v.metadataURI)
+      tokens.map((v) => {
+        console.log('Add Token:', v.name)
+        drop.setToken(v.name, v.price, v.supply, v.tokenURI, v.metadataURI)
       }),
     )
 
-    drop.setEgg('baseEgg')
+    drop.setToken('baseToken')
     await drop.deployed()
   })
 
@@ -101,21 +101,21 @@ describe('ZooDrop', () => {
     }
   })
 
-  it('Should set & get egg price', async () => {
+  it('Should set & get token price', async () => {
     drop = drop.connect(signers[0])
-    const eggPrice = (await drop.eggPrice()).toNumber()
-    expect(eggPrice).to.equal(210) // default eggPrice
+    const tokenPrice = (await drop.tokenPrice()).toNumber()
+    expect(tokenPrice).to.equal(210) // default tokenPrice
 
-    await drop.connect(signers[0]).setEggPrice(333) //set a new price
+    await drop.connect(signers[0]).setTokenPrice(333) //set a new price
 
-    const newPrice = (await drop.eggPrice()).toNumber()
-    expect(newPrice).to.equal(333) // gets the new eggPrice
+    const newPrice = (await drop.tokenPrice()).toNumber()
+    expect(newPrice).to.equal(333) // gets the new tokenPrice
   })
 
-  it('Should revert when setting egg price as non owner', async () => {
+  it('Should revert when setting token price as non owner', async () => {
     drop = drop.connect(signers[1])
     try {
-      const tx = await drop.setEggPrice(333)
+      const tx = await drop.setTokenPrice(333)
     } catch (e) {
       expect(e.message.includes('Ownable: caller is not the owner')).to.be.true
     }

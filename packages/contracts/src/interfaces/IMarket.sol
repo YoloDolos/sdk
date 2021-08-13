@@ -7,7 +7,7 @@ pragma experimental ABIEncoderV2;
 import { Decimal } from "../Decimal.sol";
 
 /**
- * @title Interface for Zoo Protocol's Market
+ * @title Interface for  Protocol's Market
  */
 interface IMarket {
 

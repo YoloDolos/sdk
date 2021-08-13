@@ -1,4 +1,4 @@
-// deploy/01_deploy_zoo_market.js
+// deploy/01_deploymarket.js
 
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
@@ -8,7 +8,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = deployments
   const { deployer } = await getNamedAccounts()
 
-  await deploy('ZooMarket', {
+  await deploy('Market', {
     from: deployer,
     args: [],
     log: true,
@@ -18,5 +18,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 }
 
 export default func
-func.id = 'deploy_zoo_market'
-func.tags = ['ZooMarket']
+func.id = 'deploymarket'
+func.tags = ['Market']

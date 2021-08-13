@@ -1,12 +1,12 @@
 import { deployments, ethers, getNamedAccounts } from 'hardhat'
 
-// import { ZooKeeper__factory, ZooMedia__factory, ZooMarket__factory, Token, ZooDrop } from '../types';
+// import { App__factory, Media__factory, Market__factory, Token, Drop } from '../types';
 
-// import { ZooMedia } from '../types/ZooMedia';
-// import { ZooToken } from '../types/ZooToken';
-// import { ZooFaucet } from '../types/ZooFaucet';
-// import { ZooMarket } from '../types/ZooMarket';
-// import { ZooKeeper } from '../types/ZooKeeper';
+// import { Media } from '../types/Media';
+// import { Token } from '../types/Token';
+// import { Faucet } from '../types/Faucet';
+// import { Market } from '../types/Market';
+// import { App } from '../types/App';
 import chai, { expect } from 'chai'
 // import configureGame from '../utils/configureGame';
 import { BigNumber, Bytes, BytesLike, utils } from 'ethers'
@@ -20,29 +20,29 @@ chai.use(solidity)
 let zooToken: any
 let zooDrop: any
 let zooMarket: any
-let zooKeeper: any
+let zooApp: any
 let zooMedia: any
 let signers: any
 let mintAmt = 100000000
 let owner
 let mediaAddress: string
 let marketAddress: string
-let eggPrice: any
+let tokenPrice: any
 
 const setupTest = deployments.createFixture(async ({ deployments, getNamedAccounts, ethers }, options) => {
   const contracts = await deployments.fixture() // ensure you start from a fresh deployments
 
   signers = await ethers.getSigners()
 
-  zooToken = await ethers.getContractAt('ZooToken', contracts.ZooToken.address, signers[0])
+  zooToken = await ethers.getContractAt('Token', contracts.Token.address, signers[0])
 
-  zooMarket = await ethers.getContractAt('ZooMarket', contracts.ZooMarket.address, signers[0])
+  zooMarket = await ethers.getContractAt('Market', contracts.Market.address, signers[0])
 
-  zooMedia = await ethers.getContractAt('ZooMedia', contracts.ZooMedia.address, signers[0])
+  zooMedia = await ethers.getContractAt('Media', contracts.Media.address, signers[0])
 
-  zooKeeper = await ethers.getContractAt('ZooKeeper', contracts.ZooKeeper.address, signers[0])
+  zooApp = await ethers.getContractAt('App', contracts.App.address, signers[0])
 
-  zooDrop = await ethers.getContractAt('ZooDrop', contracts.ZooDrop.address, signers[0])
+  zooDrop = await ethers.getContractAt('Drop', contracts.Drop.address, signers[0])
 
   // this mint is executed once and then createFixture will ensure it is snapshotted
   // await zooToken.mint(tokenOwner.deployer, 100000).then(tx => tx.wait());
@@ -51,12 +51,12 @@ const setupTest = deployments.createFixture(async ({ deployments, getNamedAccoun
 
   owner = getDeployer.deployer
 
-  eggPrice = await zooDrop.eggPrice()
+  tokenPrice = await zooDrop.tokenPrice()
 
   return true
 })
 
-describe('ZooToken', () => {
+describe('Token', () => {
   it.only('testing 1 2 3', async function () {
     // const { tokenOwner } = await setupTest()
 
@@ -69,7 +69,7 @@ describe('ZooToken', () => {
   })
 })
 
-describe('ZooKeeper', () => {
+describe('App', () => {
   before(async () => {})
 
   beforeEach(async () => {})
@@ -79,43 +79,43 @@ describe('ZooKeeper', () => {
   async function addHybrids() {}
 
   async function breedHybrid() {
-    await zooToken.approve(zooKeeper.address, eggPrice * 100)
+    await zooToken.approve(zooApp.address, tokenPrice * 100)
 
-    const buyFirstEgg = await zooKeeper.buyEgg(1)
+    const buyFirstToken = await zooApp.buyToken(1)
 
-    const buyFirstEggReceipt = await buyFirstEgg.wait()
+    const buyFirstTokenReceipt = await buyFirstToken.wait()
 
-    let sender = buyFirstEggReceipt.events
+    let sender = buyFirstTokenReceipt.events
 
     let from_add
 
     let token_id_1
 
     for (var i = 0; i < sender.length; i++) {
-      if (sender[i].event === 'BuyEgg') {
+      if (sender[i].event === 'BuyToken') {
         from_add = sender[i].args['from']
 
         token_id_1 = sender[i].args['tokenID']
       }
     }
 
-    const buySecondEgg = await zooKeeper.buyEgg(1)
+    const buySecondToken = await zooApp.buyToken(1)
 
-    const buySecondEggReceipt = await buySecondEgg.wait()
+    const buySecondTokenReceipt = await buySecondToken.wait()
 
-    sender = buySecondEggReceipt.events
+    sender = buySecondTokenReceipt.events
 
     let token_id_2
 
     for (var i = 0; i < sender.length; i++) {
-      if (sender[i].event === 'BuyEgg') {
+      if (sender[i].event === 'BuyToken') {
         from_add = sender[i].args['from']
 
         token_id_2 = sender[i].args['tokenID']
       }
     }
 
-    const firstHatchedAnimal = await zooKeeper.hatchEgg(1, token_id_1)
+    const firstHatchedAnimal = await zooApp.hatchToken(1, token_id_1)
 
     const hatchFirstAnimalReceipt = await firstHatchedAnimal.wait()
 
@@ -131,7 +131,7 @@ describe('ZooKeeper', () => {
       }
     }
 
-    let secondHatchedAnimal = await zooKeeper.hatchEgg(1, token_id_2)
+    let secondHatchedAnimal = await zooApp.hatchToken(1, token_id_2)
 
     const secondHatchedAnimalReceipt = await secondHatchedAnimal.wait()
 
@@ -139,7 +139,7 @@ describe('ZooKeeper', () => {
 
     let token_id_Animal_2
 
-    let token_id_hybridEgg
+    let token_id_hybridToken
 
     for (var i = 0; i < sender.length; i++) {
       if (sender[i].event === 'Hatch') {
@@ -149,7 +149,7 @@ describe('ZooKeeper', () => {
       }
     }
 
-    const breedTx = await zooKeeper.breedAnimals(1, parseInt(token_id_Animal_1), parseInt(token_id_Animal_2))
+    const breedTx = await zooApp.breedAnimals(1, parseInt(token_id_Animal_1), parseInt(token_id_Animal_2))
 
     const breedReceipt = await breedTx.wait()
 
@@ -157,74 +157,74 @@ describe('ZooKeeper', () => {
 
     sender.forEach((element) => {
       if (element.event == 'Breed') {
-        token_id_hybridEgg = element.args['_eggTokenId']
+        token_id_hybridToken = element.args['_tokenTokenId']
       }
     })
 
     for (var i = 0; i < sender.length; i++) {
       if (sender[i].event === 'Breed') {
-        token_id_hybridEgg = sender[i].args['tokenID']
+        token_id_hybridToken = sender[i].args['tokenID']
       }
     }
 
-    return parseInt(token_id_hybridEgg)
+    return parseInt(token_id_hybridToken)
   }
 
   it.only('Should configure a playable game', async () => {
-    // Increase allowance so we can buy 100 eggs for testing
-    //  const eggPrice = await zooDrop.methods.eggPrice().call();
+    // Increase allowance so we can buy 100 tokens for testing
+    //  const tokenPrice = await zooDrop.methods.tokenPrice().call();
     //  const tsx = zooToken.methods
-    //     .approve(keeperAdd, eggPrice*100)
+    //     .approve(keeperAdd, tokenPrice*100)
     //     .send({ from: account })
 
-    const approve = await zooToken.approve(zooKeeper.address, parseInt(eggPrice) * 100)
+    const approve = await zooToken.approve(zooApp.address, parseInt(tokenPrice) * 100)
 
-    // // Buy initial two eggs
-    // await zooKeeper.methods.buyEgg(1).send({ from: account }).then((res) => {
-    //     console.log('buyEgg', res)
+    // // Buy initial two tokens
+    // await zooApp.methods.buyToken(1).send({ from: account }).then((res) => {
+    //     console.log('buyToken', res)
     //  })
 
-    // await zooKeeper.methods.buyEgg(1).send({ from: account }).then((res) => {
-    //     console.log('buyEgg', res)
+    // await zooApp.methods.buyToken(1).send({ from: account }).then((res) => {
+    //     console.log('buyToken', res)
     //  })
 
-    await zooKeeper.buyEgg(1)
+    await zooApp.buyToken(1)
 
-    await zooKeeper.buyEgg(1)
+    await zooApp.buyToken(1)
 
-    // // Hatch eggs into animals
-    // await zooKeeper.methods.hatchEgg(1, 1).send({ from: account }).then((res) => {
-    //   console.log('hatchEgg', res);
+    // // Hatch tokens into animals
+    // await zooApp.methods.hatchToken(1, 1).send({ from: account }).then((res) => {
+    //   console.log('hatchToken', res);
     // })
 
-    // await zooKeeper.methods.hatchEgg(1, 2).send({ from: account }).then((res) => {
-    //   console.log('hatchEgg', res);
+    // await zooApp.methods.hatchToken(1, 2).send({ from: account }).then((res) => {
+    //   console.log('hatchToken', res);
     // })
 
-    await zooKeeper.hatchEgg(1, 1)
+    await zooApp.hatchToken(1, 1)
 
-    await zooKeeper.hatchEgg(1, 2)
+    await zooApp.hatchToken(1, 2)
 
-    // Breed animals into hybrid egg
-    // await zooKeeper.methods.breedAnimals(1, 3, 4).send({ from: account }).then((res) => {
+    // Breed animals into hybrid token
+    // await zooApp.methods.breedAnimals(1, 3, 4).send({ from: account }).then((res) => {
     //   console.log('breedAnimals', res)
     // })
 
-    await zooKeeper.breedAnimals(1, 3, 4)
+    await zooApp.breedAnimals(1, 3, 4)
 
-    // Hatch hybrid egg into hybrid animal
-    // await zooKeeper.methods.hatchEgg(1, 5).send({ from: account }).then((res) => {
-    //   console.log('hatchEgg', res);
+    // Hatch hybrid token into hybrid animal
+    // await zooApp.methods.hatchToken(1, 5).send({ from: account }).then((res) => {
+    //   console.log('hatchToken', res);
     // })
 
-    await zooKeeper.hatchEgg(1, 5)
+    await zooApp.hatchToken(1, 5)
 
     // Free animal and collect yield
-    // await zooKeeper.methods.freeAnimal(6).send({ from: account }).then((res) => {
+    // await zooApp.methods.freeAnimal(6).send({ from: account }).then((res) => {
     //     console.log('freeAnimal', res);
     //  })
 
-    await zooKeeper.freeAnimal(6)
+    await zooApp.freeAnimal(6)
 
     // if (tokenBalance > 1) {
     //    const tokenID = await zooMedia.methods
@@ -233,7 +233,7 @@ describe('ZooKeeper', () => {
     //    console.log("tokenID", tokenID);
     //    const tokenURI = await zooMedia.methods.tokenURI(tokenID).call();
     //    console.log("tokenURI", tokenURI);
-    //    const token = await zooKeeper.methods.tokens(tokenID).call();
+    //    const token = await zooApp.methods.tokens(tokenID).call();
     //    console.log("token", token);
     // }
 
@@ -243,8 +243,8 @@ describe('ZooKeeper', () => {
   /*
     Deploy Script
     */
-  it.only('Should get the ZooDrop owner', async () => {
-    const zooDropOwner: string = await zooKeeper.owner()
+  it.only('Should get the Drop owner', async () => {
+    const zooDropOwner: string = await zooApp.owner()
 
     expect(zooDropOwner).to.equal(owner)
   })
@@ -252,17 +252,17 @@ describe('ZooKeeper', () => {
   /**
    * DROP
    */
-  // it("Should create a new ZooKeeper contract with AddDrop event", async () => {
+  // it("Should create a new App contract with AddDrop event", async () => {
 
   //     const block = await ethers.provider.getBlockNumber();
 
-  //     await zooKeeper.connect(signers[0]).addDrop("test1", 16000, 210);
+  //     await zooApp.connect(signers[0]).addDrop("test1", 16000, 210);
 
-  //     let events = await zooKeeper.queryFilter(zooKeeper.filters.AddDrop(null, null), block);
+  //     let events = await zooApp.queryFilter(zooApp.filters.AddDrop(null, null), block);
 
   //     expect(events.length).eq(1);
 
-  //     const log = zooKeeper.interface.parseLog(events[0]);
+  //     const log = zooApp.interface.parseLog(events[0]);
 
   //     expect(log.name).to.equal("AddDrop");
 
@@ -272,19 +272,19 @@ describe('ZooKeeper', () => {
   /**
    * BUYING EGGS
    */
-  it.only('Should buy a basic egg', async () => {
-    const buyEgg = await zooKeeper.buyEgg(1)
+  it.only('Should buy a basic token', async () => {
+    const buyToken = await zooApp.buyToken(1)
 
-    const buyEggReceipt = await buyEgg.wait()
+    const buyTokenReceipt = await buyToken.wait()
 
-    const sender = buyEggReceipt.events
+    const sender = buyTokenReceipt.events
 
     let from_add: any
 
     let token_id: any
 
     for (var i = 0; i < sender.length; i++) {
-      if (sender[i].event === 'BuyEgg') {
+      if (sender[i].event === 'BuyToken') {
         from_add = sender[i].args['from']
 
         token_id = sender[i].args['tokenID']
@@ -296,51 +296,51 @@ describe('ZooKeeper', () => {
     expect(parseInt(token_id._hex)).to.equal(7)
 
     // add check for types mapping
-    // expect(await zooKeeper.types(parseInt(token_id._hex))).to.equal(parseInt(token_id._hex));
+    // expect(await zooApp.types(parseInt(token_id._hex))).to.equal(parseInt(token_id._hex));
 
-    // // check eggs mapping for new egg
-    // let egg = await zooKeeper.eggs(parseInt(token_id._hex));
+    // // check tokens mapping for new token
+    // let token = await zooApp.tokens(parseInt(token_id._hex));
 
-    // console.log(egg.eggCreationTime)
+    // console.log(token.tokenCreationTime)
 
-    // expect(egg.eggCreationTime.toNumber()).to.greaterThan(0);
+    // expect(token.tokenCreationTime.toNumber()).to.greaterThan(0);
 
     // TOTAL EGGS AFTER THIS TEST = 3
   })
 
-  it.only('Should buy multiple basic eggs', async () => {
-    const preEggSupply = await zooDrop.eggSupply()
+  it.only('Should buy multiple basic tokens', async () => {
+    const preTokenSupply = await zooDrop.tokenSupply()
 
     for (var i = 0; i < 3; i++) {
-      await zooKeeper.buyEgg(1)
+      await zooApp.buyToken(1)
     }
 
     const totalSupply = await zooDrop.totalSupply()
 
-    const postEggSupply = await zooDrop.eggSupply()
+    const postTokenSupply = await zooDrop.tokenSupply()
 
-    // expect(parseInt(postEggSupply)).to.be.equal(parseInt(preEggSupply) - parseInt(totalSupply))
+    // expect(parseInt(postTokenSupply)).to.be.equal(parseInt(preTokenSupply) - parseInt(totalSupply))
 
     // TOTAL EGGS AFTER THIS TEST = 6
   })
 
-  it('Should revert when totalSupply of eggs are reaching', async () => {
-    await zooKeeper.connect(owner).addDrop('test3', 1, 210)
+  it('Should revert when totalSupply of tokens are reaching', async () => {
+    await zooApp.connect(owner).addDrop('test3', 1, 210)
 
-    await zooKeeper.setTokenURI(3, 'basicEgg', 'basicEgg.tokenURI1')
-    await zooKeeper.setMetadataURI(3, 'basicEgg', 'basicEgg.metadataURI1')
-    await zooKeeper.setTokenURI(3, 'hybridEgg', 'hybridEgg.tokenURI1')
-    await zooKeeper.setMetadataURI(3, 'hybridEgg', 'hybridEgg.metadataURI1')
+    await zooApp.setTokenURI(3, 'basicToken', 'basicToken.tokenURI1')
+    await zooApp.setMetadataURI(3, 'basicToken', 'basicToken.metadataURI1')
+    await zooApp.setTokenURI(3, 'hybridToken', 'hybridToken.tokenURI1')
+    await zooApp.setMetadataURI(3, 'hybridToken', 'hybridToken.metadataURI1')
 
-    const dropAddress = await zooKeeper.drops(3)
+    const dropAddress = await zooApp.drops(3)
 
-    const drop = await ethers.getContractAt('ZooDrop', dropAddress)
+    const drop = await ethers.getContractAt('Drop', dropAddress)
 
-    await zooToken.approve(zooKeeper.address, 500)
+    await zooToken.approve(zooApp.address, 500)
 
     const preBal = await zooToken.balanceOf(owner.address)
 
-    await zooKeeper.connect(signers[0]).buyEgg(3)
+    await zooApp.connect(signers[0]).buyToken(3)
 
     const postBal = await zooToken.balanceOf(owner.address)
 
@@ -348,7 +348,7 @@ describe('ZooKeeper', () => {
 
     const currentSupply = await drop.currentSupply()
 
-    await expect(zooKeeper.connect(signers[0]).buyEgg(3)).to.be.revertedWith('There are no more Eggs that can be purchased')
+    await expect(zooApp.connect(signers[0]).buyToken(3)).to.be.revertedWith('There are no more Tokens that can be purchased')
 
     expect(parseInt(postBal._hex)).to.equal(parseInt(preBal._hex) - 210)
 
@@ -362,45 +362,45 @@ describe('ZooKeeper', () => {
 
     await zooToken.connect(signers[1]).transfer(signers[2].address, BigInt(1e22))
 
-    await zooToken.connect(signers[1]).approve(zooKeeper.address, parseInt(eggPrice))
+    await zooToken.connect(signers[1]).approve(zooApp.address, parseInt(tokenPrice))
 
-    await expect(zooKeeper.connect(signers[1]).buyEgg(1)).to.be.revertedWith('ZK: Not Enough ZOO to purchase Egg')
+    await expect(zooApp.connect(signers[1]).buyToken(1)).to.be.revertedWith('ZK: Not Enough ZOO to purchase Token')
   })
 
   // Skip for now
-  it('Should share bidshare from buy egg to contract owner', async () => {})
+  it('Should share bidshare from buy token to contract owner', async () => {})
 
   /**
    * HATCHING EGGS
    */
-  it.only('Should hatch & burn basic egg', async () => {
+  it.only('Should hatch & burn basic token', async () => {
     const totalSupply = await zooDrop.totalSupply()
 
-    await zooToken.approve(zooKeeper.address, eggPrice)
+    await zooToken.approve(zooApp.address, tokenPrice)
 
-    const buyEgg = await zooKeeper.buyEgg(1)
+    const buyToken = await zooApp.buyToken(1)
 
-    const buyEggReceipt = await buyEgg.wait()
+    const buyTokenReceipt = await buyToken.wait()
 
-    let sender = buyEggReceipt.events
+    let sender = buyTokenReceipt.events
 
     let from_add: any
 
     let token_id: any
 
     for (var i = 0; i < sender.length; i++) {
-      if (sender[i].event === 'BuyEgg') {
+      if (sender[i].event === 'BuyToken') {
         from_add = sender[i].args['from']
 
         token_id = sender[i].args['tokenID']
       }
     }
 
-    const hatchEgg = await zooKeeper.hatchEgg(1, parseInt(token_id))
+    const hatchToken = await zooApp.hatchToken(1, parseInt(token_id))
 
-    const hatchEggReceipt = await hatchEgg.wait()
+    const hatchTokenReceipt = await hatchToken.wait()
 
-    sender = hatchEggReceipt.events
+    sender = hatchTokenReceipt.events
 
     let from_add2: any
 
@@ -423,14 +423,14 @@ describe('ZooKeeper', () => {
     expect(newAnimal[0].name).to.not.equal('')
   })
 
-  it.only('Should hatch & burn hybrid egg', async () => {
+  it.only('Should hatch & burn hybrid token', async () => {
     const token = await breedHybrid()
 
-    const hatchEgg = await zooKeeper.hatchEgg(1, token)
+    const hatchToken = await zooApp.hatchToken(1, token)
 
-    const hatchEggReceipt = await hatchEgg.wait()
+    const hatchTokenReceipt = await hatchToken.wait()
 
-    let sender = hatchEggReceipt.events
+    let sender = hatchTokenReceipt.events
 
     let from_add2
 
@@ -449,57 +449,57 @@ describe('ZooKeeper', () => {
     expect(parseInt(token_id2)).to.equal(18)
   })
 
-  it.only('Should revert when hatching egg with invalid tokenid', async () => {
-    await zooToken.approve(zooKeeper.address, eggPrice)
+  it.only('Should revert when hatching token with invalid tokenid', async () => {
+    await zooToken.approve(zooApp.address, tokenPrice)
 
-    await zooKeeper.buyEgg(1)
+    await zooApp.buyToken(1)
 
-    await expect(zooKeeper.hatchEgg(1, 525600)).to.be.revertedWith('Egg is burned or does not exist')
+    await expect(zooApp.hatchToken(1, 525600)).to.be.revertedWith('Token is burned or does not exist')
   })
 
-  it('Should revert when egg creation time restriction is not met', async () => {})
+  it('Should revert when token creation time restriction is not met', async () => {})
 
   /**
    * BREEDING
    */
-  it.only('Should breed a hybrid egg', async () => {
-    await zooToken.approve(zooKeeper.address, eggPrice * 100)
+  it.only('Should breed a hybrid token', async () => {
+    await zooToken.approve(zooApp.address, tokenPrice * 100)
 
-    const buyFirstEgg = await zooKeeper.buyEgg(1)
+    const buyFirstToken = await zooApp.buyToken(1)
 
-    const buyFirstEggReceipt = await buyFirstEgg.wait()
+    const buyFirstTokenReceipt = await buyFirstToken.wait()
 
-    let sender = buyFirstEggReceipt.events
+    let sender = buyFirstTokenReceipt.events
 
     let from_add
 
     let token_id_1
 
     for (var i = 0; i < sender.length; i++) {
-      if (sender[i].event === 'BuyEgg') {
+      if (sender[i].event === 'BuyToken') {
         from_add = sender[i].args['from']
 
         token_id_1 = sender[i].args['tokenID']
       }
     }
 
-    const buySecondEgg = await zooKeeper.buyEgg(1)
+    const buySecondToken = await zooApp.buyToken(1)
 
-    const buySecondEggReceipt = await buySecondEgg.wait()
+    const buySecondTokenReceipt = await buySecondToken.wait()
 
-    sender = buySecondEggReceipt.events
+    sender = buySecondTokenReceipt.events
 
     let token_id_2
 
     for (var i = 0; i < sender.length; i++) {
-      if (sender[i].event === 'BuyEgg') {
+      if (sender[i].event === 'BuyToken') {
         from_add = sender[i].args['from']
 
         token_id_2 = sender[i].args['tokenID']
       }
     }
 
-    const firstHatchedAnimal = await zooKeeper.hatchEgg(1, parseInt(token_id_1))
+    const firstHatchedAnimal = await zooApp.hatchToken(1, parseInt(token_id_1))
 
     const hatchFirstAnimalReceipt = await firstHatchedAnimal.wait()
 
@@ -515,7 +515,7 @@ describe('ZooKeeper', () => {
       }
     }
 
-    let secondHatchedAnimal = await zooKeeper.hatchEgg(1, parseInt(token_id_2))
+    let secondHatchedAnimal = await zooApp.hatchToken(1, parseInt(token_id_2))
 
     const secondHatchedAnimalReceipt = await secondHatchedAnimal.wait()
 
@@ -523,7 +523,7 @@ describe('ZooKeeper', () => {
 
     let token_id_Animal_2
 
-    let token_id_hybridEgg
+    let token_id_hybridToken
 
     for (var i = 0; i < sender.length; i++) {
       if (sender[i].event === 'Hatch') {
@@ -535,7 +535,7 @@ describe('ZooKeeper', () => {
 
     await ethers.provider.send('evm_setNextBlockTimestamp', [9617249934])
 
-    const breedTx = await zooKeeper.breedAnimals(1, token_id_Animal_1, token_id_Animal_2)
+    const breedTx = await zooApp.breedAnimals(1, token_id_Animal_1, token_id_Animal_2)
 
     const breedReceipt = await breedTx.wait()
 
@@ -543,52 +543,52 @@ describe('ZooKeeper', () => {
 
     for (var i = 0; i < sender.length; i++) {
       if (sender[i].event === 'Breed') {
-        token_id_hybridEgg = sender[i].args['tokenID']
+        token_id_hybridToken = sender[i].args['tokenID']
       }
     }
 
-    expect(parseInt(token_id_hybridEgg)).to.equal(24)
+    expect(parseInt(token_id_hybridToken)).to.equal(24)
 
-    // const eggType = await zooKeeper.connect(owner).types(token_id_hybridEgg);
-    // expect(eggType).to.equal(2);
+    // const tokenType = await zooApp.connect(owner).types(token_id_hybridToken);
+    // expect(tokenType).to.equal(2);
   })
 
   it.only('Should revert when there is breedCooldown', async () => {
-    const buyFirstEgg = await zooKeeper.buyEgg(1)
+    const buyFirstToken = await zooApp.buyToken(1)
 
-    const buyFirstEggReceipt = await buyFirstEgg.wait()
+    const buyFirstTokenReceipt = await buyFirstToken.wait()
 
-    let sender = buyFirstEggReceipt.events
+    let sender = buyFirstTokenReceipt.events
 
     let from_add
 
     let token_id_1
 
     for (var i = 0; i < sender.length; i++) {
-      if (sender[i].event === 'BuyEgg') {
+      if (sender[i].event === 'BuyToken') {
         from_add = sender[i].args['from']
 
         token_id_1 = sender[i].args['tokenID']
       }
     }
 
-    const buySecondEgg = await zooKeeper.buyEgg(1)
+    const buySecondToken = await zooApp.buyToken(1)
 
-    const buySecondEggReceipt = await buySecondEgg.wait()
+    const buySecondTokenReceipt = await buySecondToken.wait()
 
-    sender = buySecondEggReceipt.events
+    sender = buySecondTokenReceipt.events
 
     let token_id_2
 
     for (var i = 0; i < sender.length; i++) {
-      if (sender[i].event === 'BuyEgg') {
+      if (sender[i].event === 'BuyToken') {
         from_add = sender[i].args['from']
 
         token_id_2 = sender[i].args['tokenID']
       }
     }
 
-    const firstHatchedAnimal = await zooKeeper.hatchEgg(1, token_id_1)
+    const firstHatchedAnimal = await zooApp.hatchToken(1, token_id_1)
 
     const hatchFirstAnimalReceipt = await firstHatchedAnimal.wait()
 
@@ -604,7 +604,7 @@ describe('ZooKeeper', () => {
       }
     }
 
-    let secondHatchedAnimal = await zooKeeper.hatchEgg(1, token_id_2)
+    let secondHatchedAnimal = await zooApp.hatchToken(1, token_id_2)
 
     const secondHatchedAnimalReceipt = await secondHatchedAnimal.wait()
 
@@ -612,7 +612,7 @@ describe('ZooKeeper', () => {
 
     let token_id_Animal_2
 
-    let token_id_hybridEgg
+    let token_id_hybridToken
 
     for (var i = 0; i < sender.length; i++) {
       if (sender[i].event === 'Hatch') {
@@ -622,45 +622,45 @@ describe('ZooKeeper', () => {
       }
     }
 
-    // await expect(zooKeeper.breedAnimals(1, token_id_Animal_2, token_id_Animal_1))
+    // await expect(zooApp.breedAnimals(1, token_id_Animal_2, token_id_Animal_1))
     //     .to.be.revertedWith("Must wait for cooldown to finish.")
   })
   it.only('Should revert when breeding with a hybrid', async () => {
-    const buyFirstEgg = await zooKeeper.buyEgg(1)
+    const buyFirstToken = await zooApp.buyToken(1)
 
-    const buyFirstEggReceipt = await buyFirstEgg.wait()
+    const buyFirstTokenReceipt = await buyFirstToken.wait()
 
-    let sender = buyFirstEggReceipt.events
+    let sender = buyFirstTokenReceipt.events
 
     let from_add
 
     let token_id_1
 
     for (var i = 0; i < sender.length; i++) {
-      if (sender[i].event === 'BuyEgg') {
+      if (sender[i].event === 'BuyToken') {
         from_add = sender[i].args['from']
 
         token_id_1 = sender[i].args['tokenID']
       }
     }
 
-    const buySecondEgg = await zooKeeper.buyEgg(1)
+    const buySecondToken = await zooApp.buyToken(1)
 
-    const buySecondEggReceipt = await buySecondEgg.wait()
+    const buySecondTokenReceipt = await buySecondToken.wait()
 
-    sender = buySecondEggReceipt.events
+    sender = buySecondTokenReceipt.events
 
     let token_id_2
 
     for (var i = 0; i < sender.length; i++) {
-      if (sender[i].event === 'BuyEgg') {
+      if (sender[i].event === 'BuyToken') {
         from_add = sender[i].args['from']
 
         token_id_2 = sender[i].args['tokenID']
       }
     }
 
-    const firstHatchedAnimal = await zooKeeper.hatchEgg(1, token_id_1)
+    const firstHatchedAnimal = await zooApp.hatchToken(1, token_id_1)
 
     const hatchFirstAnimalReceipt = await firstHatchedAnimal.wait()
 
@@ -676,7 +676,7 @@ describe('ZooKeeper', () => {
       }
     }
 
-    let secondHatchedAnimal = await zooKeeper.hatchEgg(1, token_id_2)
+    let secondHatchedAnimal = await zooApp.hatchToken(1, token_id_2)
 
     const secondHatchedAnimalReceipt = await secondHatchedAnimal.wait()
 
@@ -684,7 +684,7 @@ describe('ZooKeeper', () => {
 
     let token_id_Animal_2
 
-    let token_id_hybridEgg
+    let token_id_hybridToken
 
     for (var i = 0; i < sender.length; i++) {
       if (sender[i].event === 'Hatch') {
@@ -697,7 +697,7 @@ describe('ZooKeeper', () => {
     // await ethers.provider.send("evm_increaseTime", [432000]);
     await ethers.provider.send('evm_setNextBlockTimestamp', [19234499888])
 
-    const breedTx = await zooKeeper.breedAnimals(1, token_id_Animal_1, token_id_Animal_2)
+    const breedTx = await zooApp.breedAnimals(1, token_id_Animal_1, token_id_Animal_2)
 
     const breedReceipt = await breedTx.wait()
 
@@ -705,11 +705,11 @@ describe('ZooKeeper', () => {
 
     for (var i = 0; i < sender.length; i++) {
       if (sender[i].event === 'Breed') {
-        token_id_hybridEgg = sender[i].args['tokenID']
+        token_id_hybridToken = sender[i].args['tokenID']
       }
     }
 
-    const firstHatchedHybridAnimal = await zooKeeper.hatchEgg(1, token_id_hybridEgg)
+    const firstHatchedHybridAnimal = await zooApp.hatchToken(1, token_id_hybridToken)
 
     const firstHatchedHybridAnimalReceipt = await firstHatchedHybridAnimal.wait()
 
@@ -730,7 +730,7 @@ describe('ZooKeeper', () => {
     // await ethers.provider.send("evm_increaseTime", [432000]);
     await ethers.provider.send('evm_setNextBlockTimestamp', [38468999776])
 
-    await expect(zooKeeper.breedAnimals(1, token_id_Animal_1, token_id_Hybrid_Animal)).to.be.revertedWith('Only BASE_ANIMAL can breed.')
+    await expect(zooApp.breedAnimals(1, token_id_Animal_1, token_id_Hybrid_Animal)).to.be.revertedWith('Only BASE_ANIMAL can breed.')
   })
 
   it.only('Should revert when breeding with two hybrids', async () => {
@@ -738,7 +738,7 @@ describe('ZooKeeper', () => {
 
     const token_2 = breedHybrid()
 
-    await expect(zooKeeper.breedAnimals(1, token_1, token_2)).to.be.revertedWith('Only BASE_ANIMAL can breed.')
+    await expect(zooApp.breedAnimals(1, token_1, token_2)).to.be.revertedWith('Only BASE_ANIMAL can breed.')
   })
 
   // // /**
@@ -746,28 +746,28 @@ describe('ZooKeeper', () => {
   // //  */
 
   it('Should free a basic animal', async () => {
-    await zooToken.approve(zooKeeper.address, 600)
+    await zooToken.approve(zooApp.address, 600)
 
-    const buyEgg = await zooKeeper.connect(owner).buyEgg(1)
+    const buyToken = await zooApp.connect(owner).buyToken(1)
 
-    const buyEggReceipt = await buyEgg.wait()
+    const buyTokenReceipt = await buyToken.wait()
 
-    let sender = buyEggReceipt.events
+    let sender = buyTokenReceipt.events
 
     let from_add
     let token_id
 
     sender.forEach((element) => {
-      if (element.event == 'BuyEgg') {
+      if (element.event == 'BuyToken') {
         from_add = element.args['_from']
         token_id = element.args['_tokenID']
       }
     })
 
-    const hatchEgg = await zooKeeper.hatchEgg(1, token_id)
-    const hatchEggReceipt = await hatchEgg.wait()
+    const hatchToken = await zooApp.hatchToken(1, token_id)
+    const hatchTokenReceipt = await hatchToken.wait()
 
-    sender = hatchEggReceipt.events
+    sender = hatchTokenReceipt.events
 
     let from_add2
     let token_id2
@@ -807,7 +807,7 @@ describe('ZooKeeper', () => {
     // expect(token_id.toNumber()).to.equal(38);
     // expect(_yield.toNumber()).to.greaterThan(0);
 
-    // const newAnimal = await zooKeeper.animals(token_id.toNumber());
+    // const newAnimal = await zooApp.animals(token_id.toNumber());
     // expect(newAnimal.name).to.equal('');
 
     // const newBalance = await zooToken.balanceOf(owner.address);
@@ -818,9 +818,9 @@ describe('ZooKeeper', () => {
     // await ethers.provider.send("evm_increaseTime", [432000]);
     // await ethers.provider.send("evm_setNextBlockTimestamp", [96172499440]);
     // const tokenId = await breedHybrid();
-    // const hatchEgg = await zooKeeper.hatchEgg(1, tokenId)
-    // const hatchEggReceipt = await hatchEgg.wait();
-    // let sender = hatchEggReceipt.events;
+    // const hatchToken = await zooApp.hatchToken(1, tokenId)
+    // const hatchTokenReceipt = await hatchToken.wait();
+    // let sender = hatchTokenReceipt.events;
     // let from_add
     // let token_id
     // let from_add2
@@ -835,7 +835,7 @@ describe('ZooKeeper', () => {
     // const prevBalance = await zooToken.balanceOf(owner.address);
     // // TODO increase block number and test yield
     // await ethers.provider.send("evm_setNextBlockTimestamp", [192344998892]);
-    // const freed = await zooKeeper.freeAnimal(token_id2);
+    // const freed = await zooApp.freeAnimal(token_id2);
     // const freedReceipt = await freed.wait();
     // sender = freedReceipt.events
     // sender.forEach(element => {
@@ -853,7 +853,7 @@ describe('ZooKeeper', () => {
     // expect(from_add).to.equal(owner.address);
     // expect(token_id.toNumber()).to.equal(44);
     // expect(_yield.toNumber()).to.greaterThan(0);
-    // const newAnimal = await zooKeeper.animals(token_id.toNumber());
+    // const newAnimal = await zooApp.animals(token_id.toNumber());
     // expect(newAnimal.name).to.equal('');
     // const newBalance = await zooToken.balanceOf(owner.address);
     // expect(newBalance.toNumber()).to.greaterThan(prevBalance.toNumber());

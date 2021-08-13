@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
+// Forked from https://github.com/austintgriffith/commit-reveal
 
 pragma solidity >=0.8.4;
 
 contract Random {
-    uint8 public max = 100;
+    uint16 public max = 10000;
 
     constructor() {}
 

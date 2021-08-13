@@ -1,4 +1,4 @@
-// deploy/02_deploy_zoo_media.js
+// deploy/02_deploymedia.js
 
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
@@ -8,9 +8,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = deployments
   const { deployer } = await getNamedAccounts()
 
-  await deploy('ZooMedia', {
+  await deploy('Media', {
     from: deployer,
-    args: ['CryptoZoo', 'ANML'],
+    args: ['Crypto', 'ANML'],
     log: true,
   })
 
@@ -18,6 +18,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 }
 
 export default func
-func.id = 'deploy_zoo_media' // ID required to prevent reexecution
-func.tags = ['ZooMedia']
+func.id = 'deploymedia' // ID required to prevent reexecution
+func.tags = ['Media']
 func.dependencies = []
